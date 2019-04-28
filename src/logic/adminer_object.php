@@ -45,7 +45,7 @@ function adminer_object()
             return config('lumener.name', 'Lumener');
         }
 
-        public function permanentLogin($j=false)
+        public function permanentLogin($j = false)
         {
             // key used for permanent login
             $key = config('lumener.adminer_perma_key');

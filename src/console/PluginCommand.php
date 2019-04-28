@@ -71,7 +71,7 @@ class PluginCommand extends Command
             } else {
                 $this->error('Lumener: Could not retrieve plugin file. '
                 .
-                ($response ? "\r\n[{$response->getStatusCode()}] {$response->getReasonPhrase()} {(string)$response->getBody()}" : "Connection Failed.\r\n" . ShellHelper::$LastError));
+                ($response ? "\r\n[{$response->getStatusCode()}] {$response->getReasonPhrase()} {(string)$response->getBody()}" : "Connection Failed.\r\n".ShellHelper::$LastError));
                 return;
             }
         }

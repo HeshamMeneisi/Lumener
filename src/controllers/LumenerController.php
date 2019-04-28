@@ -32,7 +32,7 @@ class LumenerController extends Controller
     public function __call($method, $params)
     {
         if (strncasecmp($method, "get", 3) === 0) {
-            $var = preg_replace_callback('/[A-Z]/', function ($c) {
+            $var = preg_replace_callback('/[A-Z]/', function($c) {
                 return '_'.strtolower($c[0]);
             }, lcfirst(substr($method, 3)));
             return $this->$var;
@@ -137,7 +137,7 @@ class LumenerController extends Controller
         return $content;
     }
 
-    private function _runGetBuffer($files, $allowed_errors=[E_WARNING])
+    private function _runGetBuffer($files, $allowed_errors = [E_WARNING])
     {
         // Require files
         ob_implicit_flush(0);
@@ -154,7 +154,7 @@ class LumenerController extends Controller
         }
         $content = "";
         while ($level = ob_get_clean()) {
-            $content = $level . $content;
+            $content = $level.$content;
         }
         return $content;
     }

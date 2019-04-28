@@ -15,7 +15,7 @@ class ShellHelper
      *
      * @return bool|mixed|\Psr\Http\Message\ResponseInterface
      */
-    public static function get($uri, $params=[])
+    public static function get($uri, $params = [])
     {
         try {
             $client = new Client(); //GuzzleHttp\Client
