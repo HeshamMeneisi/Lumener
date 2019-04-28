@@ -54,6 +54,23 @@ class UpdateCommand extends Command
         if ($force) {
             $this->error("Force mode active.");
         }
+        $current_version = $this->_getCurrentAdminerVersion();
+        if ($current_version) {
+            $this->info("Lumener: Current ".$current_version);
+        } else {
+            $this->error("Lumener: Adminer not found.");
+        }
+        $version = $this->_getRequiredAdminerVersion();
+        if ($force || !file_exists($this->filename)
+            || $version != $current_version) {
+            $this->_downloadVersion($version);
+        } else {
+            $this->info('Lumener: Up to date.');
+        }
+    }
+
+    private function _getCurrentAdminerVersion()
+    {
         $current_version = false;
         try {
             if (file_exists($this->filename)) {
@@ -69,23 +86,12 @@ class UpdateCommand extends Command
                 }
             }
         } catch (\Throwable $e) {
-            // current_version is false
+            // Just return false
         }
-        if ($current_version) {
-            $this->info("Lumener: Current ".$current_version);
-        } else {
-            $this->error("Lumener: Adminer not found.");
-        }
-        $version = $this->_getVersion();
-        if ($force || !file_exists($this->filename)
-            || $version != $current_version) {
-            $this->_downloadVersion($version);
-        } else {
-            $this->info('Lumener: Up to date.');
-        }
+        return $current_version;
     }
 
-    private function _getVersion()
+    private function _getRequiredAdminerVersion()
     {
         $vsource = config(
             'lumener.adminer_version',

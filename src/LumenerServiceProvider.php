@@ -39,9 +39,9 @@ class LumenerServiceProvider extends ServiceProvider
         }
         if (isset($route_options['middleware'])) {
             $route_options['middleware'] =
-             array_unique(array_merge(
-                 array_keys($this->middleware),
-                 is_array($route_options['middleware']) ?
+                array_unique(array_merge(
+                    array_keys($this->middleware),
+                    is_array($route_options['middleware']) ?
                   $route_options['middleware'] : [$route_options['middleware']]
             ));
         } else {
@@ -77,9 +77,9 @@ class LumenerServiceProvider extends ServiceProvider
             foreach ($route['action'] as $key => $value) {
                 if ($key == "middleware") {
                     $this->route_options['middleware'] =
-                     array_unique(array_merge(
-                         $this->route_options['middleware'],
-                         is_array($value) ? $value : [$value]
+                        array_unique(array_merge(
+                            $this->route_options['middleware'],
+                            is_array($value) ? $value : [$value]
                     ));
                 } elseif ($key == "uses") {
                     $this->route_options[$key] = "\\{$value}";
@@ -90,7 +90,7 @@ class LumenerServiceProvider extends ServiceProvider
             $this->route_path = $uri;
         }
         $this->route_options['namespace'] = $this->namespace;
-        $this->app->router->group($this->route_options, function ($router) {
+        $this->app->router->group($this->route_options, function($router) {
             $router->addRoute(
                 ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
                 $this->route_path,
@@ -99,9 +99,9 @@ class LumenerServiceProvider extends ServiceProvider
             $this->route_options['as'] = "lumener-resources";
             $this->route_options['uses'] = 'LumenerController@getResource';
             $router->get(
-                $this->route_path . '/resources',
+                $this->route_path.'/resources',
                 ['uses' => 'LumenerController@getResource',
-                 'as' => 'lumener-resources']
+                    'as' => 'lumener-resources']
             );
         });
     }
@@ -110,7 +110,7 @@ class LumenerServiceProvider extends ServiceProvider
     {
         // TODO: Merge routes for laravel
         \Route::namespace($this->namespace)
-            ->group(function () {
+            ->group(function() {
                 \Route::any($this->route_path, $this->route_options);
                 $this->route_options['uses'] = "LumenerController@getResource'";
                 \Route::get($this->route_path.'/resources', $this->route_options);
@@ -143,20 +143,20 @@ class LumenerServiceProvider extends ServiceProvider
 
         $this->app->singleton(
             'command.lumener.update',
-            function (/** @scrutinizer ignore-unused */ $app) {
+            function(/** @scrutinizer ignore-unused */ $app) {
                 return new UpdateCommand();
             }
         );
 
         $this->app->singleton(
             'command.lumener.stylize',
-            function (/** @scrutinizer ignore-unused */ $app) {
+            function(/** @scrutinizer ignore-unused */ $app) {
                 return new StylizeCommand();
             }
         );
         $this->app->singleton(
             'command.lumener.plugin',
-            function (/** @scrutinizer ignore-unused */ $app) {
+            function(/** @scrutinizer ignore-unused */ $app) {
                 return new PluginCommand();
             }
         );
@@ -178,6 +178,6 @@ class LumenerServiceProvider extends ServiceProvider
                 'command.lumener.update',
                 'command.lumener.stylize',
                 'command.lumener.plugin'
-             ];
+                ];
     }
 }
