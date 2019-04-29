@@ -31,7 +31,8 @@ return [
     // This url format supports v4.2.5+
     "source" => "https://github.com/vrana/adminer/releases/download/v{version}/adminer-{version}.php",
     // These functions will be replaced by adminer_{name} to avoid conflicts
-    "rename_list" => ['redirect', 'cookie', 'view', 'exit', 'ob_flush'],
+    "rename_list" => ['redirect', 'cookie', 'view', 'exit', 'ob_flush',
+                      'ob_end_clean'],
     // version can be exact (e.g. v4.7.1) if version_type is NOT "url"
     "version" => "https://api.github.com/repos/vrana/adminer/releases/latest",
     "version_type" => "url",
@@ -57,13 +58,16 @@ return [
     /**
      * Security
      */
-    // Uncomment any of the following lines to limit access by db/user
+    // Uncomment any of the following lines to limit access by db/user/table
     // Note that *_protected overrides *_allowed in conflicts
     "security" => [
-    // "allowed_db" => ['my_db'],
-    // "protected_db" => ['information_schema', 'mysql'],
-    // "allowed_users" => ['admin'],
-    // "protected_users" => ['root']
+        // "allowed_db" => ['my_db'],
+        // "protected_db" => ['information_schema', 'mysql'],
+        // "allowed_users" => ['admin'],
+        // "protected_users" => ['root']
+        // WARNING: Hidden tables are still editable if the user knows their name
+        // Further control can be achieved with plugins/extensions
+        // "hidden_tables" => ['users']
     ],
 
     /**

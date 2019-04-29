@@ -10,6 +10,10 @@ function adminer_object()
     {
         // Nothing to do
     }
+    function adminer_ob_end_clean()
+    {
+        // Nothing to do
+    }
     $plugins = [];
     $plugin_file = $lumener_controller->getPluginsPath().'/plugin.php';
     if (file_exists($plugin_file)) {
@@ -99,6 +103,22 @@ function adminer_object()
                 return LUMENER_CSP;
             }
             return parent::csp();
+        }
+
+        public function database()
+        {
+            // For Adminer Editor
+            return config('lumener.db.database', env("DB_DATABASE"));
+        }
+
+        public function tableName($tableStatus)
+        {
+            $hidden = config('lumener.security.hidden_tables', []);
+            $name = $tableStatus['Name'];
+            if (!in_array($name, $hidden)) {
+                return $name;
+            }
+            return "";
         }
     }
 

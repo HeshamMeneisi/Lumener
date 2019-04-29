@@ -159,7 +159,7 @@ class UpdateCommand extends Command
         $url = str_replace("{version}", ltrim($version, 'v'), $url);
         $response = ShellHelper::get($url, ['sink' => $this->filename]);
         if ($response && $response->getStatusCode() == '200') {
-            $this->info("Patching adminer.php...");
+            $this->info("Lumener: Patching adminer.php...");
             $this->_patchAdminer();
             $this->info("Lumener: Updated!");
             return true;
