@@ -23,6 +23,8 @@ class LumenerController extends Controller
         // LumenerServiceProvider::register holds the middleware register
         // so it does not need to be addeed manually.
         // User-defined middleware is handled during route definition for Lumen
+        $this->allowed_dbs = config('lumener.security.allowed_db');
+        $this->protected_dbs = config('lumener.security.protected_db');
         $this->adminer = LUMENER_STORAGE.'/adminer.php';
         $this->adminer_object = __DIR__.'/../logic/adminer_object.php';
         $this->plugins_path = LUMENER_STORAGE.'/plugins';
@@ -105,7 +107,7 @@ class LumenerController extends Controller
         );
     }
 
-    private function _runAdminer()
+    private function _handleAdminerAutoLogin()
     {
         if (!isset($_GET['username']) && !isset($_POST['auth'])
             && config('lumener.auto_login')
@@ -117,16 +119,24 @@ class LumenerController extends Controller
                 config('lumener.db.database', env("DB_DATABASE"));
             // Password is set in the adminer extension
         }
-        // Security Check
-        $this->allowed_dbs = config('lumener.security.allowed_db');
-        $this->protected_dbs = config('lumener.security.protected_db');
+    }
 
+    private function _verifyAdminerRequest()
+    {
         if ((isset($_GET['db']) && $_GET['db']
             && $this->isDBBlocked($_GET['db']))
         || (isset($_POST['auth']['db']) && $_POST['auth']['db']
             && $this->isDBBlocked($_POST['auth']['db']))) {
             abort(403);
         }
+    }
+
+    private function _runAdminer()
+    {
+        $this->_handleAdminerAutoLogin();
+
+        // Security Check
+        $this->_verifyAdminerRequest();
 
         $content =
             $this->_runGetBuffer([$this->adminer_object, $this->adminer]);

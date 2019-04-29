@@ -32,7 +32,7 @@ return [
     "source" => "https://github.com/vrana/adminer/releases/download/v{version}/adminer-{version}.php",
     // These functions will be replaced by adminer_{name} to avoid conflicts
     "rename_list" => ['redirect', 'cookie', 'view', 'exit', 'ob_flush',
-                      'ob_end_clean'],
+                       'ob_end_clean'],
     // version can be exact (e.g. v4.7.1) if version_type is NOT "url"
     "version" => "https://api.github.com/repos/vrana/adminer/releases/latest",
     "version_type" => "url",

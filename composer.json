@@ -1,7 +1,8 @@
 {
     "name": "hgists/lumener",
-    "description": "Adminer for Lumen/Laravel 5.*",
-    "keywords": ["adminer", "lumen", "laravel", "plugins", "themes"],
+    "description": "Adminer/Adminer Editor for Lumen/Laravel 5.*",
+    "keywords": ["adminer", "editor", "lumen", "laravel", "plugins", "themes",
+                 "extensions"],
     "license": "MIT",
     "authors": [
         {
