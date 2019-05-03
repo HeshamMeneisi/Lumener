@@ -123,10 +123,18 @@ class LumenerController extends Controller
                 [E_WARNING],
                 "/LUMENER_OVERRIDE_exit/"
             );
-
-        if (strpos($content, "<!DOCTYPE html>") === false) {
+        $pos = strpos($content, "<!DOCTYPE html>");
+        if ($pos === false) {
             die($content);
         }
+
+        // This is a work-around for a strange issue where the error
+        // that happens in place of exit does not stop execution and the html
+        // is rendered after the CSS/JS/Image file
+        if ($pos != 0) {
+            die(substr($content, 0, $pos));
+        }
+
         return $content;
     }
 
