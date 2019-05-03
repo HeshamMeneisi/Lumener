@@ -6,11 +6,11 @@ $lumener_controller = $this;
 function adminer_object()
 {
     global $lumener_controller;
-    function adminer_ob_flush()
+    function LUMENER_OVERRIDE_ob_flush()
     {
         // Nothing to do
     }
-    function adminer_ob_end_clean()
+    function LUMENER_OVERRIDE_ob_end_clean()
     {
         // Nothing to do
     }
