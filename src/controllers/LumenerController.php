@@ -146,7 +146,7 @@ class LumenerController extends Controller
 
     private function _guessFileType($name)
     {
-        $ext = explode('.', $name)[-1];
+        $ext = end(explode('.', $name));
         return $this->mimes->getMimeType($ext);
     }
 
