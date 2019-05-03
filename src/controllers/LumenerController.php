@@ -118,7 +118,11 @@ class LumenerController extends Controller
         $this->_verifyAdminerRequest();
 
         $content =
-            $this->_runGetBuffer([$this->adminer_object, $this->adminer]);
+            $this->_runGetBuffer(
+                [$this->adminer_object, $this->adminer],
+                [E_WARNING],
+                "/LUMENER_OVERRIDE_exit/"
+            );
 
         if (strpos($content, "<!DOCTYPE html>") === false) {
             die($content);
@@ -157,10 +161,14 @@ class LumenerController extends Controller
         }
     }
 
-    private function _runGetBuffer($files, $allowed_errors=[E_WARNING])
-    {
+    private function _runGetBuffer(
+        $files,
+        $termination_errors,
+        $err_pattern
+    ) {
         // Prepare for unhandled errors
-        $this->_setupErrorHandling();
+        // Termination errors are not necessarily going to be thrown
+        $this->_setupErrorHandling($termination_errors, $err_pattern);
         // Require files
         ob_implicit_flush(0);
         ob_start();
@@ -171,7 +179,7 @@ class LumenerController extends Controller
             }
         } catch (\ErrorException $e) {
             if (config('lumener.debug')
-            || !in_array($e->getSeverity(), $allowed_errors)) {
+            || !in_array($e->getSeverity(), $termination_errors)) {
                 throw $e;
             }
         }
@@ -183,21 +191,25 @@ class LumenerController extends Controller
         return $content;
     }
 
-    private function _setupErrorHandling()
+    private function _setupErrorHandling($termination_errors, $pattern)
     {
-        set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line) {
-            // Check if suppressed with the @-operator
-            if (0 === error_reporting()) {
+        $handled = 0;
+        foreach ($termination_errors as $code) {
+            $handled |= $code;
+        }
+        set_error_handler(
+            function ($err_severity, $err_msg, $err_file, $err_line) use ($pattern) {
+                // Check if suppressed with the @-operator
+                if (0 === error_reporting()) {
+                    return false;
+                }
+                if (preg_match($pattern, $err_msg)) {
+                    throw new \ErrorException($err_msg, $err_severity, $err_severity, $err_file, $err_line);
+                }
                 return false;
-            }
-            throw new \ErrorException(
-                $err_msg,
-                0,
-                $err_severity,
-                $err_file,
-                $err_line
-            );
-        });
+            },
+            $handled
+        );
     }
 
     private function _stopErrorHandling()
