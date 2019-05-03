@@ -149,6 +149,20 @@ class LumenerController extends Controller
 
     private function _runGetBuffer($files, $allowed_errors=[E_WARNING])
     {
+        // Prepare for unhandled errors
+        set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line) use ($allowed_errors) {
+            // Check if suppressed with the @-operator
+            if (0 === error_reporting()) {
+                return false;
+            }
+            throw new \ErrorException(
+                $err_msg,
+                0,
+                $err_severity,
+                $err_file,
+                $err_line
+            );
+        });
         // Require files
         ob_implicit_flush(0);
         ob_start();
@@ -163,6 +177,7 @@ class LumenerController extends Controller
                 throw $e;
             }
         }
+        set_error_handler(null);
         $content = "";
         while ($level = ob_get_clean()) {
             $content = $level . $content;
