@@ -107,6 +107,25 @@ class LumenerController extends Controller
         );
     }
 
+    private function _runAdminer()
+    {
+        $this->_handleAdminerAutoLogin();
+
+        // Known Issues
+        $this->_patchAdminerRequest();
+
+        // Security Check
+        $this->_verifyAdminerRequest();
+
+        $content =
+            $this->_runGetBuffer([$this->adminer_object, $this->adminer]);
+
+        if (strpos($content, "<!DOCTYPE html>") === false) {
+            die($content);
+        }
+        return $content;
+    }
+
     private function _handleAdminerAutoLogin()
     {
         if (!isset($_GET['username']) && !isset($_POST['auth'])
@@ -131,38 +150,17 @@ class LumenerController extends Controller
         }
     }
 
-    private function _runAdminer()
+    private function _patchAdminerRequest()
     {
-        $this->_handleAdminerAutoLogin();
-
-        // Security Check
-        $this->_verifyAdminerRequest();
-
-        $content =
-            $this->_runGetBuffer([$this->adminer_object, $this->adminer]);
-
-        if (strpos($content, "<!DOCTYPE html>") === false) {
-            die($content);
+        if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+            $_SERVER['HTTP_IF_MODIFIED_SINCE'] = null;
         }
-        return $content;
     }
 
     private function _runGetBuffer($files, $allowed_errors=[E_WARNING])
     {
         // Prepare for unhandled errors
-        set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line) use ($allowed_errors) {
-            // Check if suppressed with the @-operator
-            if (0 === error_reporting()) {
-                return false;
-            }
-            throw new \ErrorException(
-                $err_msg,
-                0,
-                $err_severity,
-                $err_file,
-                $err_line
-            );
-        });
+        $this->_setupErrorHandling();
         // Require files
         ob_implicit_flush(0);
         ob_start();
@@ -177,11 +175,33 @@ class LumenerController extends Controller
                 throw $e;
             }
         }
-        set_error_handler(null);
+        $this->_stopErrorHandling();
         $content = "";
         while ($level = ob_get_clean()) {
             $content = $level . $content;
         }
         return $content;
+    }
+
+    private function _setupErrorHandling()
+    {
+        set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line) {
+            // Check if suppressed with the @-operator
+            if (0 === error_reporting()) {
+                return false;
+            }
+            throw new \ErrorException(
+                $err_msg,
+                0,
+                $err_severity,
+                $err_file,
+                $err_line
+            );
+        });
+    }
+
+    private function _stopErrorHandling()
+    {
+        set_error_handler(null);
     }
 }
