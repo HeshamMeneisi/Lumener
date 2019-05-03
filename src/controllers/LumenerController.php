@@ -13,6 +13,7 @@ class LumenerController extends Controller
     protected $allowed_dbs;
     protected $protected_dbs;
     protected $request;
+    protected $mimes;
 
     public function __construct(Request $request)
     {
@@ -29,6 +30,7 @@ class LumenerController extends Controller
         $this->adminer_object = __DIR__.'/../logic/adminer_object.php';
         $this->plugins_path = LUMENER_STORAGE.'/plugins';
         $this->request = $request;
+        $this->mimes = new \Mimey\MimeTypes;
     }
 
     public function __call($method, $params)
@@ -132,10 +134,20 @@ class LumenerController extends Controller
         // that happens in place of exit does not stop execution and the html
         // is rendered after the CSS/JS/Image file
         if ($pos != 0) {
+            if (isset($_GET['file'])) {
+                $type = $this->_guessFileType($_GET['file']);
+                header("Content-Type: {$type}");
+            }
             die(substr($content, 0, $pos));
         }
 
         return $content;
+    }
+
+    private function _guessFileType($name)
+    {
+        $ext = explode('.', $name)[-1];
+        return $this->mimes->getMimeType($ext);
     }
 
     private function _handleAdminerAutoLogin()
